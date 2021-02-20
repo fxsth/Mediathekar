@@ -1,0 +1,32 @@
+﻿@page
+@model DownloadModel
+@using MediaLibrarian.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+
+    ViewData["Title"] = "Downloads";
+}
+<form method="post">
+    <div class="form-group">
+        URL to file:
+        <input asp-for="DownloadFile.Url" type="url" />
+        <select asp-for="DownloadFile.MediaType" asp-items="Html.GetEnumSelectList<MediaType>()" class="form-control"></select>
+        <input type="submit" />
+    </div>
+</form>
+<div class="card-columns">
+        @if (Model.Downloads != null)
+        {
+            foreach (var download in Model.Downloads)
+            {
+            <div class="card">
+                @*<div class="card-img" style="background-image: url('@season.channel_images.dashboard_image_1125_1500');">
+                </div>*@
+                <div class="card-body">
+                    <h5 class="card-title">@download.MediaType</h5>
+                    <h5 class="card-body">@download.Url</h5>
+                </div>
+            </div>
+            }
+        }
+    </div>

@@ -1,10 +1,48 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Downloads";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>Below is all available data listed</p>
 </div>
+
+@*<div class="card-columns">
+        @foreach (var season in Model.PokemonTVResults)
+        {
+            <div class="card">
+                <div class="card-img" style="background-image: url('@season.channel_images.dashboard_image_1125_1500');">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@season.channel_name</h5>
+                </div>
+            </div>
+        }
+    </div>*@
+
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th scope="col">Season</th>
+            <th scope="col">Episode</th>
+            <th scope="col">Title</th>
+            <th scope="col">Downloadlink</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var season in Model.PokemonTVResults)
+        {
+            @foreach (var episode in season.media)
+            {
+                <tr>
+                    <th scope="row">@episode.season</th>
+                    <th scope="row">@episode.episode</th>
+                    <td>@episode.title</td>
+                    <td class="text"><span><a href=@episode.stream_url>Direct Link to File</a></span></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
