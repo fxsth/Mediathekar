@@ -19,9 +19,19 @@ namespace MediaLibrarian.Pages
             _downloadService = downloadService;
         }
 
-        public void OnGet()
+        //public void OnGet()
+        //{
+        //    Downloads = _downloadService.Downloads;
+        //}
+        public async Task<IActionResult> OnGetAsync(string season, string episode, string title, string url)
         {
+            if (url != null && url.Length != 0)
+            {
+
+                _downloadService.Downloads.Add(new DownloadFile(url, title, episode == null && episode.Length == 0 ? MediaType.Movie :MediaType.Series));
+            }
             Downloads = _downloadService.Downloads;
+            return Page();
         }
 
         [BindProperty]

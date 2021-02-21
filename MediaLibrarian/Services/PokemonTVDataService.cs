@@ -23,8 +23,23 @@ namespace MediaLibrarian.Services
         {
             return RetrieveAvailableData().Result;
         }
-
-        public async Task<IEnumerable<PokemonTVResult>?> RetrieveAvailableData()
+        public async Task<IList<MediaLibrarian.Models.Medium>?> GetAllMedia()
+        {
+            var PokemonResultData = await RetrieveAvailableData();
+            IList<MediaLibrarian.Models.Medium> allMedia = PokemonResultData[0].media;
+            for (int i = 0; i < PokemonResultData.Count; i++)
+            {
+                if (i > 0)
+                {
+                    foreach (var episode in PokemonResultData[i].media)
+                    {
+                        allMedia.Add(episode);
+                    }
+                }
+            }
+            return allMedia;
+        }
+        public async Task<IList<PokemonTVResult>?> RetrieveAvailableData()
         {
             try
             {
@@ -34,8 +49,8 @@ namespace MediaLibrarian.Services
                     string stringResult = await streamTask.Content.ReadAsStringAsync();
                     JsonSerializerOptions resultSerializerOptions = new JsonSerializerOptions();
                     resultSerializerOptions.Converters.Add(new Models.Utilities.DateTimeConverter());
-                    var res = JsonSerializer.Deserialize<List<PokemonTVResult>>(stringResult, resultSerializerOptions);
-                    res.Sort(CompareResultByUpdateDate);
+                    var res = JsonSerializer.Deserialize<IList<PokemonTVResult>>(stringResult, resultSerializerOptions);
+                    //res.Sort(CompareResultByUpdateDate);
                     return res;
                 }
                 return null;

@@ -12,7 +12,7 @@ namespace MediaLibrarian.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         public PokemonTVDataService PokemonTVDataService;
-        public IEnumerable<PokemonTVResult> PokemonTVResults;
+        public IList<MediaLibrarian.Models.Medium> MediaElements;
         public DownloadService DownloadService;
 
         public IndexModel(ILogger<IndexModel> logger,
@@ -24,30 +24,10 @@ namespace MediaLibrarian.Pages
             DownloadService = downloadService;
         }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            PokemonTVResults = PokemonTVDataService.GetResultData();
+            MediaElements = await PokemonTVDataService.GetAllMedia();
         }
         
-        public IActionResult StartDownload(string button)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-            DownloadService.Downloads.Add(new DownloadFile(button, 0));
-            return Page();
-        }
-        public async Task<IActionResult> OnPostAsync(string value)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            //DownloadService.Downloads.Add(DownloadFile);
-
-            return Page();
-        }
     }
 }

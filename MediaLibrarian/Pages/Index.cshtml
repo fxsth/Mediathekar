@@ -5,37 +5,55 @@
     ViewData["Title"] = "Downloads";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Below is all available data listed</p>
-</div>
+<h1>Index</h1>
 
-<table class="table table-dark">
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
     <thead>
         <tr>
-            <th scope="col">Season</th>
-            <th scope="col">Episode</th>
-            <th scope="col">Title</th>
-            <th scope="col">Last modified</th>
-            <th scope="col">Downloadlink</th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaElements[0].season)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaElements[0].episode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaElements[0].title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaElements[0].last_modified)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaElements[0].stream_url)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var season in Model.PokemonTVResults)
+        @foreach (var item in Model.MediaElements)
         {
-            @foreach (var episode in season.media)
-            {
-                <tr>
-                    <th scope="row">@episode.season</th>
-                    <th scope="row">@episode.episode</th>
-                    <td>@episode.title</td>
-                    <td>@episode.last_modified</td>
-                    <td class="text"><span><a href=@episode.stream_url>Direct Link to File</a></span></td>
-                    <td>
-                        <button name="button" style="background-color: transparent; color: yellow" value=@episode.stream_url asp-action="StartDownload">Download</button>
-                    </td>
-                </tr>
-            }
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.season)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.episode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.last_modified)
+            </td>
+            <td>
+                <a href=@item.stream_url>Direct Link to File</a>
+            </td>
+            <td>
+                <a asp-page="./Downloads" asp-route-season=@item.season asp-route-episode=@item.episode asp-route-title=@item.title asp-route-url=@item.stream_url>Download</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

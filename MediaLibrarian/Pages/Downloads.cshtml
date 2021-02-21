@@ -10,6 +10,9 @@
     <div class="form-group">
         URL to file:
         <input asp-for="DownloadFile.Url" type="url" />
+        Filename:
+        <input asp-for="DownloadFile.Filename" type="text" />
+        Type for storing in the right Folder:
         <select asp-for="DownloadFile.MediaType" asp-items="Html.GetEnumSelectList<MediaType>()" class="form-control"></select>
         <input type="submit" />
     </div>

@@ -7,13 +7,15 @@ namespace MediaLibrarian.Models
 {
     public class DownloadFile
     {
-        public DownloadFile(string url, MediaType mediaType)
+        public DownloadFile(string url, string filename, MediaType mediaType)
         {
             Url = url;
+            Filename = filename;
             MediaType = mediaType;
         }
 
         public string Url { get; set; }
+        public string Filename { get; set; }
         public MediaType MediaType { get; set; }
     }
 
