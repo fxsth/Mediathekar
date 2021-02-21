@@ -1,5 +1,6 @@
 ﻿@page
 @model IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Downloads";
 }
@@ -9,25 +10,13 @@
     <p>Below is all available data listed</p>
 </div>
 
-@*<div class="card-columns">
-        @foreach (var season in Model.PokemonTVResults)
-        {
-            <div class="card">
-                <div class="card-img" style="background-image: url('@season.channel_images.dashboard_image_1125_1500');">
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">@season.channel_name</h5>
-                </div>
-            </div>
-        }
-    </div>*@
-
 <table class="table table-dark">
     <thead>
         <tr>
             <th scope="col">Season</th>
             <th scope="col">Episode</th>
             <th scope="col">Title</th>
+            <th scope="col">Last modified</th>
             <th scope="col">Downloadlink</th>
         </tr>
     </thead>
@@ -40,7 +29,11 @@
                     <th scope="row">@episode.season</th>
                     <th scope="row">@episode.episode</th>
                     <td>@episode.title</td>
+                    <td>@episode.last_modified</td>
                     <td class="text"><span><a href=@episode.stream_url>Direct Link to File</a></span></td>
+                    <td>
+                        <button name="button" style="background-color: transparent; color: yellow" value=@episode.stream_url asp-action="StartDownload">Download</button>
+                    </td>
                 </tr>
             }
         }

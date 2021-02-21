@@ -33,8 +33,9 @@ namespace MediaLibrarian.Services
                 {
                     string stringResult = await streamTask.Content.ReadAsStringAsync();
                     JsonSerializerOptions resultSerializerOptions = new JsonSerializerOptions();
-                    //resultSerializerOptions.IncludeFields = true;
+                    resultSerializerOptions.Converters.Add(new Models.Utilities.DateTimeConverter());
                     var res = JsonSerializer.Deserialize<List<PokemonTVResult>>(stringResult, resultSerializerOptions);
+                    res.Sort(CompareResultByUpdateDate);
                     return res;
                 }
                 return null;
@@ -44,6 +45,13 @@ namespace MediaLibrarian.Services
                 Console.WriteLine(e.Message);
                 return null;
             }
+        }
+
+        private static int CompareResultByUpdateDate(PokemonTVResult X, PokemonTVResult Y)
+        {
+            var x = X.channel_update_date;
+            var y = Y.channel_update_date;
+            return y.CompareTo(x);
         }
 
         private static readonly HttpClient client = new HttpClient();

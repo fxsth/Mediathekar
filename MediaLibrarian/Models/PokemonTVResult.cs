@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MediaLibrarian.Models
 {
@@ -23,7 +24,7 @@ namespace MediaLibrarian.Models
         public bool is_new { get; set; }
         public List<string> country_codes { get; set; }
         public string offline_url { get; set; }
-        public int last_modified { get; set; }
+        public DateTime last_modified { get; set; }
         public string stream_url { get; set; }
         public string captions { get; set; }
         public string id { get; set; }
@@ -44,11 +45,11 @@ namespace MediaLibrarian.Models
         public bool stunt_channel { get; set; }
         public string channel_name { get; set; }
         public IList<Medium> media { get; set; }
-        public int channel_creation_date { get; set; }
+        public DateTime channel_creation_date { get; set; }
         public int watch_now_order { get; set; }
         public string channel_id { get; set; }
         public ChannelImages channel_images { get; set; }
-        public int channel_update_date { get; set; }
+        public DateTime channel_update_date { get; set; }
         public string media_type { get; set; }
         public string channel_status { get; set; }
     }
