@@ -12,7 +12,7 @@ namespace MediaLibrarian.Pages
     {
         private readonly DownloadService _downloadService;
 
-        public List<DownloadFile> Downloads;
+        public Queue<DownloadFile> Downloads;
 
         public DownloadModel(DownloadService downloadService)
         {
@@ -27,8 +27,8 @@ namespace MediaLibrarian.Pages
         {
             if (url != null && url.Length != 0)
             {
-
-                _downloadService.Downloads.Add(new DownloadFile(url, title, episode == null && episode.Length == 0 ? MediaType.Movie :MediaType.Series));
+                if(!_downloadService.existsAlready(url))
+                    _downloadService.addToDownloadQueue(new DownloadFile(url, title, episode == null || episode.Length == 0 ? MediaType.Movie :MediaType.Series));
             }
             Downloads = _downloadService.Downloads;
             return Page();
@@ -43,7 +43,7 @@ namespace MediaLibrarian.Pages
                 return Page();
             }
 
-            _downloadService.Downloads.Add(DownloadFile);
+            _downloadService.addToDownloadQueue(DownloadFile);
             Downloads = _downloadService.Downloads;
 
             return Page();

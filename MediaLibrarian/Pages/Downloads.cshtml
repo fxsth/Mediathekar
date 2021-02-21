@@ -8,28 +8,38 @@
 }
 <form method="post">
     <div class="form-group">
-        URL to file:
+        <label>URL</label>
         <input asp-for="DownloadFile.Url" type="url" />
-        Filename:
+    </div>
+    <div class="form-group">
+        <label>Filename</label>
         <input asp-for="DownloadFile.Filename" type="text" />
+    </div>
+    <div class="form-group">
         Type for storing in the right Folder:
         <select asp-for="DownloadFile.MediaType" asp-items="Html.GetEnumSelectList<MediaType>()" class="form-control"></select>
         <input type="submit" />
     </div>
 </form>
 <div class="card-columns">
-        @if (Model.Downloads != null)
+    @if (Model.Downloads != null)
+    {
+        foreach (var download in Model.Downloads)
         {
-            foreach (var download in Model.Downloads)
-            {
             <div class="card">
                 @*<div class="card-img" style="background-image: url('@season.channel_images.dashboard_image_1125_1500');">
-                </div>*@
+                    </div>*@
                 <div class="card-body">
-                    <h5 class="card-title">@download.MediaType</h5>
-                    <h5 class="card-body">@download.Url</h5>
+                    <h5 class="card-title">@download.Filename</h5>
+                    <p class="card-text">
+                        @download.MediaType <br />
+                        @{
+                            var status = download.Status != null ? download.Status : "Progress: " + download.Progress + " %";
+                        }
+                        @status
+                    </p>
                 </div>
             </div>
-            }
         }
-    </div>
+    }
+</div>
