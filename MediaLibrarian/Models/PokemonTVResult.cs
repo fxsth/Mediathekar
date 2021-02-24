@@ -29,6 +29,22 @@ namespace MediaLibrarian.Models
         public string captions { get; set; }
         public string id { get; set; }
         public object size { get; set; }
+
+        public MediaElement ToMediaElement()
+        {
+            return new MediaElement
+            {
+                Channel = "PokemonTV",
+                Episode = Int32.TryParse(episode, out var tempValE) ? tempValE : (int?)null,
+                Season = Int32.TryParse(season, out var tempValS) ? tempValS : (int?)null,
+                IdInChannel = "PokemonTV" + id,
+                LastModified = last_modified,
+                MediaType = episode.Length == 0 ? MediaType.Movie : MediaType.Series,
+                Title = title,
+                Topic = "Pokemon",
+                Url = stream_url
+            };
+        }
     }
 
     public class ChannelImages

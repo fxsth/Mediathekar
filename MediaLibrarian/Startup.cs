@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using MediaLibrarian.Data;
 
 namespace MediaLibrarian
 {
@@ -22,6 +24,9 @@ namespace MediaLibrarian
             services.AddRazorPages();
             services.AddTransient<PokemonTVDataService>();
             services.AddSingleton<DownloadService>();
+
+            services.AddDbContext<MediaElementContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("MediaElementContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

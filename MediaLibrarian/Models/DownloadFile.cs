@@ -18,9 +18,30 @@ namespace MediaLibrarian.Models
 
             download();
         }
+        public DownloadFile(MediaElement element)
+        {
+            Url = element.Url;
+            if (element.MediaType == MediaType.Series && element.Episode.HasValue)
+            {
+                Filename = "S" + element.Season + "E" + element.Episode + " " + element.Title;
+            }
+            else
+            {
+                string year ="";
+                if(element.Year.HasValue)
+                {
+                    year = " (" + element.Year + ")";
+                }
+                Filename = element.Title+year;
+            }
+            Filename = Filename.Trim(Path.GetInvalidFileNameChars());
+            MediaType = element.MediaType;
+
+            download();
+        }
 
         public string Url { get; set; }
-        public string Filename { get; private set;}
+        public string Filename { get; private set; }
         public MediaType MediaType { get; set; }
         public int Progress { get; private set; }
         public string? Status { get; private set; }
@@ -57,7 +78,7 @@ namespace MediaLibrarian.Models
                 IConversionResult result = await conversion.Start();
                 return result;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Status = e.Message;
                 return null;

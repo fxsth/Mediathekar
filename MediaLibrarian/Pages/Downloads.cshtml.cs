@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MediaLibrarian.Models;
 using MediaLibrarian.Services;
@@ -10,12 +13,15 @@ namespace MediaLibrarian.Pages
 {
     public class DownloadModel : PageModel
     {
+        private readonly MediaLibrarian.Data.MediaElementContext _context; 
         private readonly DownloadService _downloadService;
 
         public Queue<DownloadFile> Downloads;
 
-        public DownloadModel(DownloadService downloadService)
+        public DownloadModel(DownloadService downloadService,
+            MediaLibrarian.Data.MediaElementContext context)
         {
+            _context = context;
             _downloadService = downloadService;
         }
 
@@ -27,9 +33,30 @@ namespace MediaLibrarian.Pages
         {
             if (url != null && url.Length != 0)
             {
-                if(!_downloadService.existsAlready(url))
-                    _downloadService.addToDownloadQueue(new DownloadFile(url, title, episode == null || episode.Length == 0 ? MediaType.Movie :MediaType.Series));
+                if (!_downloadService.existsAlready(url))
+                    _downloadService.addToDownloadQueue(new DownloadFile(url, title, episode == null || episode.Length == 0 ? MediaType.Movie : MediaType.Series));
             }
+            Downloads = _downloadService.Downloads;
+            return Page();
+        }
+        public async Task<IActionResult> OnGetMediaelementAsync(string id)
+        {
+            if (id == null || id.Length == 0)
+            {
+                return Page();
+            }
+            MediaElement toDownload;
+            var bytes = Encoding.UTF8.GetBytes("Download failed - No Entity found");
+            try
+            {
+                toDownload =  _context.MediaElements.Single(e => e.IdInChannel == id);
+            }
+            catch(Exception e)
+            {
+                return Page();
+            }
+            if (!_downloadService.existsAlready(toDownload.Url))
+                _downloadService.addToDownloadQueue(new DownloadFile(toDownload));
             Downloads = _downloadService.Downloads;
             return Page();
         }
