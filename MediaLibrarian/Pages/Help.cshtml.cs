@@ -8,11 +8,11 @@ using Microsoft.Extensions.Logging;
 
 namespace MediaLibrarian.Pages
 {
-    public class PrivacyModel : PageModel
+    public class HelpModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> _logger;
+        private readonly ILogger<HelpModel> _logger;
 
-        public PrivacyModel(ILogger<PrivacyModel> logger)
+        public HelpModel(ILogger<HelpModel> logger)
         {
             _logger = logger;
         }
