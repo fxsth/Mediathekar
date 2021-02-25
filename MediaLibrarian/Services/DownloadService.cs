@@ -32,6 +32,7 @@ namespace MediaLibrarian.Services
         public void addToDownloadQueue(DownloadFile file)
         {
             Downloads.Enqueue(file);
+            file.startDownload();
         }
     }
 }

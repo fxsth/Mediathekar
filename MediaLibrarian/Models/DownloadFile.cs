@@ -10,13 +10,12 @@ namespace MediaLibrarian.Models
 {
     public class DownloadFile
     {
+        public DownloadFile() { }
         public DownloadFile(string url, string filename, MediaType mediaType)
         {
             Url = url;
             Filename = filename.Trim(Path.GetInvalidFileNameChars()); ;
             MediaType = mediaType;
-
-            download();
         }
         public DownloadFile(MediaElement element)
         {
@@ -36,8 +35,6 @@ namespace MediaLibrarian.Models
             }
             Filename = string.Join("-", Filename.Split(Path.GetInvalidFileNameChars()));
             MediaType = element.MediaType;
-
-            download();
         }
 
         public string Url { get; set; }
@@ -47,6 +44,11 @@ namespace MediaLibrarian.Models
         public string? Status { get; private set; }
 
         private IMediaInfo MediaInfo;
+        
+        public void startDownload()
+        {
+            Task.Run(() => download());
+        }
         private async Task<IConversionResult> download()
         {
             try

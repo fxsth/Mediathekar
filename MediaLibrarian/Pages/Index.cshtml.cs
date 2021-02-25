@@ -103,7 +103,7 @@ namespace MediaLibrarian.Pages
 
             int pageSize = 100;
             MediaElements = await PaginatedList<MediaElement>.CreateAsync(
-                mediaElements.AsNoTracking().AsNoTracking(), pageIndex ?? 1, pageSize);
+                mediaElements.AsNoTracking(), pageIndex ?? 1, pageSize);
         }
         public async Task OnPostAsync(string sortOrder,
         string currentFilter, string searchString, int? pageIndex)
