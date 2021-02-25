@@ -27,7 +27,7 @@ namespace MediaLibrarian
             services.AddSingleton<DownloadService>();
 
             services.AddDbContext<MediaElementContext>(options =>
-                    options.UseSqlite("Filename=MyDatabase.db"));//Configuration.GetConnectionString("MediaElementContext")));
+                    options.UseSqlite("Filename=MediaDatabase.db"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -64,7 +64,13 @@ namespace MediaLibrarian.Pages
                     searchString.Trim();
                     var index = searchString.IndexOf(" ");
                     string channel = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
-                    mediaElements = mediaElements.Where(s => s.Channel == channel && s.Topic.Contains(searchString.Substring(index + 1)));
+                    mediaElements = mediaElements.Where(s => s.Channel.Equals(channel));
+                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
+                    if (!string.IsNullOrWhiteSpace(searchString))
+                    {
+                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
+                                               || s.Topic.Contains(searchString));
+                    }
                 }
                 else
                 {
