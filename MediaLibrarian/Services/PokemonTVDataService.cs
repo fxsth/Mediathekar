@@ -23,23 +23,12 @@ namespace MediaLibrarian.Services
         {
             return RetrieveAvailableData().Result;
         }
-        public async Task<IList<MediaLibrarian.Models.Medium>?> GetAllMedia()
+        public async Task<List<MediaLibrarian.Models.MediaElement>> GetAllMedia()
         {
             var PokemonResultData = await RetrieveAvailableData();
-            IList<MediaLibrarian.Models.Medium> allMedia = PokemonResultData[0].media;
-            for (int i = 0; i < PokemonResultData.Count; i++)
-            {
-                if (i > 0)
-                {
-                    foreach (var episode in PokemonResultData[i].media)
-                    {
-                        allMedia.Add(episode);
-                    }
-                }
-            }
-            return allMedia;
+            return PokemonTVResult.ToMediaElements(PokemonResultData.ToList<PokemonTVResult>());
         }
-        public async Task<IList<PokemonTVResult>?> RetrieveAvailableData()
+        public async Task<IList<PokemonTVResult>> RetrieveAvailableData()
         {
             try
             {

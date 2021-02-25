@@ -34,7 +34,7 @@ namespace MediaLibrarian.Models
                 }
                 Filename = element.Title+year;
             }
-            Filename = Filename.Trim(Path.GetInvalidFileNameChars());
+            Filename = string.Join("-", Filename.Split(Path.GetInvalidFileNameChars()));
             MediaType = element.MediaType;
 
             download();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MediaLibrarian.Models;
 
 namespace MediaLibrarian.Models
 {
@@ -68,5 +69,31 @@ namespace MediaLibrarian.Models
         public DateTime channel_update_date { get; set; }
         public string media_type { get; set; }
         public string channel_status { get; set; }
+
+        public static List<MediaElement> ToMediaElements(List<PokemonTVResult> pokemonTVResults)
+        {
+            List<MediaElement> mediaElements = new List<MediaElement>();
+            foreach (var result in pokemonTVResults)
+            {
+                foreach (var medium in result.media)
+                {
+                    mediaElements.Add(new MediaElement
+                    {
+                        Channel = "PokemonTV",
+                        Episode = Int32.TryParse(medium.episode, out var tempValE) ? tempValE : (int?)null,
+                        Season = Int32.TryParse(medium.season, out var tempValS) ? tempValS : (int?)null,
+                        IdInChannel = "PokemonTV" + medium.id,
+                        LastModified = medium.last_modified,
+                        MediaType = medium.episode.Length == 0 ? MediaType.Movie : MediaType.Series,
+                        Title = medium.title,
+                        Topic = "Pokemon",
+                        Url = medium.stream_url,
+
+                    });
+                }
+            }
+            return mediaElements;
+        }
     }
+
 }

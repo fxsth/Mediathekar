@@ -17,6 +17,8 @@ namespace MediaLibrarian.Pages
         private readonly DownloadService _downloadService;
 
         public Queue<DownloadFile> Downloads;
+        public string ErrorMessage { get; set; }
+
 
         public DownloadModel(DownloadService downloadService,
             MediaLibrarian.Data.MediaElementContext context)

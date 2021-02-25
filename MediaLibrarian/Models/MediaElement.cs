@@ -21,5 +21,10 @@ namespace MediaLibrarian.Models
         public MediaType MediaType { get; set; }
         public int? Season { get; set; }
         public int? Episode { get; set; }
+
+        public bool Equals(MediaElement x, MediaElement y)
+        {
+            return x.IdInChannel == y.IdInChannel;
+        }
     }
 }
