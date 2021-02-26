@@ -56,14 +56,14 @@ namespace MediaLibrarian.Services
             var streamTask = await client.PostAsync("https://mediathekviewweb.de/api/query", httpContent);
             if (streamTask.IsSuccessStatusCode)
             {
-                String stringResult = await streamTask.Content.ReadAsStringAsync();
+                var stream = await streamTask.Content.ReadAsStreamAsync();
                 JsonSerializerOptions resultSerializerOptions = new JsonSerializerOptions();
                 resultSerializerOptions.Converters.Add(new Models.Utilities.DateTimeConverter());
                 resultSerializerOptions.Converters.Add(new Models.Utilities.NullableUInt32Converter());
                 MediathekResult res = null;
                 try
                 {
-                    res = JsonSerializer.Deserialize<MediathekResult>(stringResult, resultSerializerOptions);
+                    res = await JsonSerializer.DeserializeAsync<MediathekResult>(stream, resultSerializerOptions);
                 }
                 catch (Exception e)
                 {

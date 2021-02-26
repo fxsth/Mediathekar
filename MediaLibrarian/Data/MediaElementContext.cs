@@ -14,20 +14,15 @@ namespace MediaLibrarian.Data
             : base(options)
         {
         }
-        public bool AddIfNotExists(MediaElement e)
-        {
-            var exists = MediaElements.Local.Any(localE => localE.IdInChannel == e.IdInChannel);
-            var existsInDb = MediaElements.Any(dbE => dbE.IdInChannel == e.IdInChannel);
-            if (!exists && !existsInDb)
-                MediaElements.Add(e);
-            return exists;
-        }
         public void AddRangeIfNotExists(List<MediaElement> elements)
         {
-            HashSet<MediaElement> existingElements = MediaElements.AsNoTracking().ToHashSet(new MediaElementComparer());
-            HashSet<MediaElement> newElements = elements.ToHashSet(new MediaElementComparer());
-            newElements.ExceptWith(existingElements);
-            MediaElements.AddRange(newElements);
+            if (elements != null)
+            {
+                HashSet<MediaElement> existingElements = MediaElements.AsNoTracking().ToHashSet(new MediaElementComparer());
+                HashSet<MediaElement> newElements = elements.ToHashSet(new MediaElementComparer());
+                newElements.ExceptWith(existingElements);
+                MediaElements.AddRange(newElements);
+            }
         }
 
         public DbSet<MediaLibrarian.Models.MediaElement> MediaElements { get; set; }

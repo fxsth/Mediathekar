@@ -118,13 +118,12 @@ namespace MediaLibrarian.Pages
             catch (Exception e)
             {
                 Debug.Print(e.Message);
-                _context.Dispose();
             }
             _context.SaveChanges();
 
             int pageSize = 100;
             MediaElements = await PaginatedList<MediaElement>.CreateAsync(
-                _context.MediaElements.AsNoTracking().AsNoTracking(), pageIndex ?? 1, pageSize);
+                _context.MediaElements.AsNoTracking(), pageIndex ?? 1, pageSize);
         }
     }
 }

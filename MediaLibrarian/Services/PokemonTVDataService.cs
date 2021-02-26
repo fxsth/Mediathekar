@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using MediaLibrarian.Models;
 using Microsoft.AspNetCore.Hosting;
+using MediaLibrarian.Channel;
 
 namespace MediaLibrarian.Services
 {
@@ -18,29 +19,22 @@ namespace MediaLibrarian.Services
         }
 
         public IWebHostEnvironment WebHostEnvironment { get; }
-
-        public IEnumerable<PokemonTVResult> GetResultData()
-        {
-            return RetrieveAvailableData().Result;
-        }
         public async Task<List<MediaLibrarian.Models.MediaElement>> GetAllMedia()
         {
             var PokemonResultData = await RetrieveAvailableData();
-            return PokemonTVResult.ToMediaElements(PokemonResultData.ToList<PokemonTVResult>());
+            return PokemonTVResultConverter.ToMediaElements(PokemonResultData);
         }
-        public async Task<IList<PokemonTVResult>> RetrieveAvailableData()
+        public async Task<IEnumerable<PokemonTVResult>> RetrieveAvailableData()
         {
             try
             {
                 var streamTask = await client.GetAsync("https://www.pokemon.com/api/pokemontv/v2/channels/de/");
                 if (streamTask.IsSuccessStatusCode)
                 {
-                    string stringResult = await streamTask.Content.ReadAsStringAsync();
+                    var stream = await streamTask.Content.ReadAsStreamAsync();
                     JsonSerializerOptions resultSerializerOptions = new JsonSerializerOptions();
                     resultSerializerOptions.Converters.Add(new Models.Utilities.DateTimeConverter());
-                    var res = JsonSerializer.Deserialize<IList<PokemonTVResult>>(stringResult, resultSerializerOptions);
-                    //res.Sort(CompareResultByUpdateDate);
-                    return res;
+                    return await JsonSerializer.DeserializeAsync<IEnumerable<PokemonTVResult>>(stream, resultSerializerOptions);
                 }
                 return null;
             }
@@ -49,13 +43,6 @@ namespace MediaLibrarian.Services
                 Console.WriteLine(e.Message);
                 return null;
             }
-        }
-
-        private static int CompareResultByUpdateDate(PokemonTVResult X, PokemonTVResult Y)
-        {
-            var x = X.channel_update_date;
-            var y = Y.channel_update_date;
-            return y.CompareTo(x);
         }
 
         private static readonly HttpClient client = new HttpClient();

@@ -65,12 +65,12 @@ namespace ResultData
                 var element = new MediaLibrarian.Models.MediaElement
                 {
                     Channel = medium.channel,
-                    IdInChannel = "MediathekViewWeb" + medium.id,
+                    IdInChannel = "MediathekViewWeb" + medium.id,       // reuse id, add channel for uniqueness
                     LastModified = medium.timestamp,
                     Title = medium.title,
                     Topic = medium.topic,
                     Url = medium.url_video_hd,
-                    MediaType = MediaLibrarian.Models.MediaType.Movie
+                    MediaType = MediaLibrarian.Models.MediaType.Movie   // standard
                 };
                 int? season = null;
                 int? episode = null;
@@ -79,6 +79,11 @@ namespace ResultData
                 {
                     element.Season = season;
                     element.Episode = episode;
+                    element.MediaType = MediaLibrarian.Models.MediaType.Series;
+                }
+                if(medium.duration < 45 * 60)
+                {
+                    // less than 45min -> not a movie
                     element.MediaType = MediaLibrarian.Models.MediaType.Series;
                 }
                 mediaElements.Add(element);

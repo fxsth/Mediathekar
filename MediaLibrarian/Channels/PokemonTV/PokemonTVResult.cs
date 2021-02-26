@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MediaLibrarian.Models;
 
-namespace MediaLibrarian.Models
+namespace MediaLibrarian.Channel
 {
     public class Images
     {
@@ -30,22 +30,6 @@ namespace MediaLibrarian.Models
         public string captions { get; set; }
         public string id { get; set; }
         public object size { get; set; }
-
-        public MediaElement ToMediaElement()
-        {
-            return new MediaElement
-            {
-                Channel = "PokemonTV",
-                Episode = Int32.TryParse(episode, out var tempValE) ? tempValE : (int?)null,
-                Season = Int32.TryParse(season, out var tempValS) ? tempValS : (int?)null,
-                IdInChannel = "PokemonTV" + id,
-                LastModified = last_modified,
-                MediaType = episode.Length == 0 ? MediaType.Movie : MediaType.Series,
-                Title = title,
-                Topic = "Pokemon",
-                Url = stream_url
-            };
-        }
     }
 
     public class ChannelImages
@@ -61,7 +45,7 @@ namespace MediaLibrarian.Models
         public string channel_description { get; set; }
         public bool stunt_channel { get; set; }
         public string channel_name { get; set; }
-        public IList<Medium> media { get; set; }
+        public List<Medium> media { get; set; }
         public DateTime channel_creation_date { get; set; }
         public int watch_now_order { get; set; }
         public string channel_id { get; set; }
@@ -69,31 +53,33 @@ namespace MediaLibrarian.Models
         public DateTime channel_update_date { get; set; }
         public string media_type { get; set; }
         public string channel_status { get; set; }
-
-        public static List<MediaElement> ToMediaElements(List<PokemonTVResult> pokemonTVResults)
-        {
-            List<MediaElement> mediaElements = new List<MediaElement>();
-            foreach (var result in pokemonTVResults)
-            {
-                foreach (var medium in result.media)
-                {
-                    mediaElements.Add(new MediaElement
-                    {
-                        Channel = "PokemonTV",
-                        Episode = Int32.TryParse(medium.episode, out var tempValE) ? tempValE : (int?)null,
-                        Season = Int32.TryParse(medium.season, out var tempValS) ? tempValS : (int?)null,
-                        IdInChannel = "PokemonTV" + medium.id,
-                        LastModified = medium.last_modified,
-                        MediaType = medium.episode.Length == 0 ? MediaType.Movie : MediaType.Series,
-                        Title = medium.title,
-                        Topic = "Pokemon",
-                        Url = medium.stream_url,
-
-                    });
-                }
-            }
-            return mediaElements;
-        }
     }
 
+    public class PokemonTVResultConverter
+    {
+        public static List<MediaElement> ToMediaElements(IEnumerable<PokemonTVResult> pokemonTVResults)
+        {
+            var elements = new List<MediaElement>();
+            foreach (var res in pokemonTVResults)
+            {
+                elements.AddRange(res.media.ConvertAll(new Converter<Medium, MediaElement>(PokemonToMediaElement)));
+            }
+            return elements;
+        }
+        public static MediaElement PokemonToMediaElement(Medium medium)
+        {
+            return new MediaElement
+            {
+                Channel = "PokemonTV",
+                Episode = Int32.TryParse(medium.episode, out var tempValE) ? tempValE : (int?)null,
+                Season = Int32.TryParse(medium.season, out var tempValS) ? tempValS : (int?)null,
+                IdInChannel = "PokemonTV" + medium.id,
+                LastModified = medium.last_modified,
+                MediaType = medium.episode.Length == 0 ? MediaType.Movie : MediaType.Series,
+                Title = medium.title,
+                Topic = "Pokemon",
+                Url = medium.stream_url
+            };
+        }
+    }
 }
