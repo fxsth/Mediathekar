@@ -20,10 +20,14 @@ namespace MediaLibrarian.Models
         }
         public DownloadFile(MediaElement element)
         {
+            _mediaElement = element;
             Url = element.Url;
+            string subdir = removeIllegalChars(element.Topic);
             if (element.MediaType == MediaType.Series && element.Episode.HasValue)
             {
                 Filename = "S" + element.Season + "E" + element.Episode + " " + element.Title;
+                Filename = removeIllegalChars(Filename);
+                //Filename = Path.Combine(subdir, Filename);
             }
             else
             {
@@ -33,15 +37,11 @@ namespace MediaLibrarian.Models
                     year = " (" + element.Year + ")";
                 }
                 Filename = element.Title + year;
+                Filename = removeIllegalChars(Filename);
             }
-            Filename = string.Join("-", Filename.Split(Path.GetInvalidFileNameChars()));
-            Filename = string.Join("-", Filename.Split(Path.GetInvalidPathChars()));
-            Filename = Filename.Replace(",", "");
-            Filename = Filename.Replace("!", "");
-            Filename = Filename.Replace(":", "");
-            Filename = Filename.Trim();
             MediaType = element.MediaType;
         }
+        private MediaElement _mediaElement { get; set; }
 
         public string Url { get; set; }
         public string Filename { get; private set; }
@@ -109,6 +109,14 @@ namespace MediaLibrarian.Models
             Console.WriteLine("BaseDir is: " + baseDir);
             Console.WriteLine("Filename is: " + Filename);
             return Path.Combine(baseDir, Filename + ".mp4");
+        }
+        private string removeIllegalChars(string str)
+        {
+            str = string.Join("-", str.Split(Path.GetInvalidFileNameChars()));
+            str = string.Join("-", str.Split(Path.GetInvalidPathChars()));
+            str = str.Replace(",", "").Replace("!", "").Replace(":", "").Replace(";", "");
+            str = str.Trim();
+            return str;
         }
         private static IVideoStream selectStreamWithHighestBitrate(IEnumerable<IVideoStream> streams)
         {
