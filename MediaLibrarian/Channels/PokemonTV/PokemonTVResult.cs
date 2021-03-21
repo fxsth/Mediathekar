@@ -54,32 +54,4 @@ namespace MediaLibrarian.Channels.PokemonTV
         public string media_type { get; set; }
         public string channel_status { get; set; }
     }
-
-    public class PokemonTVResultConverter
-    {
-        public static List<MediaElement> ToMediaElements(IEnumerable<PokemonTVResult> pokemonTVResults)
-        {
-            var elements = new List<MediaElement>();
-            foreach (var res in pokemonTVResults)
-            {
-                elements.AddRange(res.media.ConvertAll(new Converter<Medium, MediaElement>(PokemonToMediaElement)));
-            }
-            return elements;
-        }
-        public static MediaElement PokemonToMediaElement(Medium medium)
-        {
-            return new MediaElement
-            {
-                Channel = "PokemonTV",
-                Episode = UInt32.TryParse(medium.episode, out var tempValE) ? tempValE : (uint?)null,
-                Season = UInt32.TryParse(medium.season, out var tempValS) ? tempValS : (uint?)null,
-                IdInChannel = "PokemonTV" + medium.id,
-                LastModified = medium.last_modified,
-                MediaType = medium.episode.Length == 0 ? MediaType.Movie : MediaType.Series,
-                Title = medium.title,
-                Topic = "Pokemon",
-                Url = medium.stream_url                
-            };
-        }
-    }
 }

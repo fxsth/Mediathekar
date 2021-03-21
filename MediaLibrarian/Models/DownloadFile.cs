@@ -36,7 +36,7 @@ namespace MediaLibrarian.Models
             }
             Filename = string.Join("-", Filename.Split(Path.GetInvalidFileNameChars()));
             Filename = string.Join("-", Filename.Split(Path.GetInvalidPathChars()));
-            Filename = Filename.Replace(",",""); 
+            Filename = Filename.Replace(",", "");
             Filename = Filename.Replace("!", "");
             Filename = Filename.Replace(":", "");
             Filename = Filename.Trim();
@@ -51,15 +51,16 @@ namespace MediaLibrarian.Models
 
         private IMediaInfo MediaInfo;
 
-        public void startDownload()
-        {
-            Task.Run(() => download());
-        }
-        private async Task<IConversionResult> download()
+        public async Task<IConversionResult> download()
         {
             try
             {
-                string outputPath = GetOutputPath(); 
+                string outputPath = GetOutputPath();
+                if (File.Exists(outputPath))
+                {
+                    Status = "File exists already";
+                    return null;
+                }
                 Console.WriteLine("GetMediaInfo called with: " + Url);
                 MediaInfo = await FFmpeg.GetMediaInfo(Url);
                 Console.WriteLine("Got the MediaInfo - FFmpeg seems to work fine");
@@ -78,9 +79,10 @@ namespace MediaLibrarian.Models
             }
             catch (Exception e)
             {
-                Console.WriteLine("Downlod-Exception: "+e.Message);
-                Console.WriteLine(e.InnerException.Message);
+                Console.WriteLine("Downlod-Exception: " + e.Message);
                 Status = e.Message;
+                if (e.InnerException != null)
+                    Console.WriteLine(e.InnerException.Message);
                 return null;
             }
         }
@@ -106,7 +108,7 @@ namespace MediaLibrarian.Models
                 baseDir = Directory.GetCurrentDirectory();
             Console.WriteLine("BaseDir is: " + baseDir);
             Console.WriteLine("Filename is: " + Filename);
-            return  Path.Combine(baseDir, Filename + ".mp4");
+            return Path.Combine(baseDir, Filename + ".mp4");
         }
         private static IVideoStream selectStreamWithHighestBitrate(IEnumerable<IVideoStream> streams)
         {
@@ -116,11 +118,5 @@ namespace MediaLibrarian.Models
         {
             return streams.ToList().OrderByDescending(stream => stream.Bitrate).First();
         }
-    }
-
-    public enum MediaType
-    {
-        Movie,
-        Series
     }
 }

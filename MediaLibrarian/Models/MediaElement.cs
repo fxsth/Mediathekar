@@ -29,4 +29,9 @@ namespace MediaLibrarian.Models
             return x.IdInChannel == y.IdInChannel;
         }
     }
+    public enum MediaType
+    {
+        Movie,
+        Series
+    }
 }

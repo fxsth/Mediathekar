@@ -13,10 +13,17 @@ namespace MediaLibrarian.Services
         public List<MediaElement> GetLatestMediaElements()
         {
             List<MediaElement> channelClientResults = new List<MediaElement>();
+            List<Task<List<MediaElement>>> tasks = new List<Task<List<MediaElement>>>();
             foreach(var client in ChannelClients)
             {
-                channelClientResults.AddRange(client.GetLatestMediaElements().Result);
+                tasks.Add(client.GetLatestMediaElements());
             }
+            Task.WaitAll(tasks.ToArray());
+            foreach (var task in tasks)
+            {
+                channelClientResults.AddRange(task.Result);
+            }
+            
             return channelClientResults;
         }
 

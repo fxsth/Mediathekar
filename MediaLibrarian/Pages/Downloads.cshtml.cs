@@ -17,6 +17,7 @@ namespace MediaLibrarian.Pages
         private readonly DownloadService _downloadService;
 
         public Queue<DownloadFile> Downloads;
+        public Queue<DownloadFile> Completed;
         public string ErrorMessage { get; set; }
 
 
@@ -38,7 +39,8 @@ namespace MediaLibrarian.Pages
                 if (!_downloadService.existsAlready(url))
                     _downloadService.addToDownloadQueue(new DownloadFile(url, title, episode == null || episode.Length == 0 ? MediaType.Movie : MediaType.Series));
             }
-            Downloads = _downloadService.Downloads;
+            Downloads = _downloadService.Downloads; 
+            Completed = _downloadService.Completed;
             return Page();
         }
         public async Task<IActionResult> OnGetMediaelementAsync(string id)
@@ -60,6 +62,7 @@ namespace MediaLibrarian.Pages
             if (!_downloadService.existsAlready(toDownload.Url))
                 _downloadService.addToDownloadQueue(new DownloadFile(toDownload));
             Downloads = _downloadService.Downloads;
+            Completed = _downloadService.Completed;
             return Page();
         }
 
@@ -74,6 +77,7 @@ namespace MediaLibrarian.Pages
 
             _downloadService.addToDownloadQueue(DownloadFile);
             Downloads = _downloadService.Downloads;
+            Completed = _downloadService.Completed;
 
             return Page();
         }

@@ -22,10 +22,10 @@
         <input type="submit" />
     </div>
 </form>
-<div class="card-columns">
-    @if (Model.Downloads != null)
-    {
-        foreach (var download in Model.Downloads)
+@if (Model.Downloads != null && Model.Downloads.Count!=0)
+{
+    <div class="card-columns">
+        @foreach (var download in Model.Downloads)
         {
             <div class="card">
                 @*<div class="card-img" style="background-image: url('@season.channel_images.dashboard_image_1125_1500');">
@@ -42,5 +42,34 @@
                 </div>
             </div>
         }
+    </div>
+}
+else
+{
+    <h4>Currently no active downloads!</h4>
+}
+<hr>
+@if (Model.Completed != null)
+{
+    foreach (var complete in Model.Completed)
+    {
+        string status;
+        string alert;
+        if (complete.Status == null)
+        {
+            status = "Completed";
+            alert = "alert-success";
+        }
+        else
+        {
+            status = complete.Status;
+            alert = "alert-warning";
+        }
+        <div class="alert @alert" role="alert">
+            <h4 class="alert-heading">@complete.Filename</h4>
+            <p>Media type: @complete.MediaType</p>
+            <hr>
+            <p class="mb-0">@status</p>
+        </div>
     }
-</div>
+}
