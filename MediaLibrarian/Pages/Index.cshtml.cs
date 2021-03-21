@@ -15,18 +15,15 @@ namespace MediaLibrarian.Pages
     public class MediaElementsModel : PageModel
     {
         private readonly MediaLibrarian.Data.MediaElementContext _context;
-        public PokemonTVDataService PokemonTVDataService;
-        public MediathekViewWebService MediathekViewWebService;
+        public ChannelClientService _channelClientService;
 
         public MediaElementsModel
             (MediaLibrarian.Data.MediaElementContext context,
-            PokemonTVDataService pokemonTVDataService,
-            MediathekViewWebService mediathekViewWebService
+            ChannelClientService ChannelClientService
             )
         {
             _context = context;
-            PokemonTVDataService = pokemonTVDataService;
-            MediathekViewWebService = mediathekViewWebService;
+            _channelClientService = ChannelClientService;
         }
         public string TitleSort { get; set; }
         public string DateSort { get; set; }
@@ -64,7 +61,45 @@ namespace MediaLibrarian.Pages
                     searchString.Trim();
                     var index = searchString.IndexOf(" ");
                     string channel = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
-                    mediaElements = mediaElements.Where(s => s.Channel.Equals(channel));
+                    mediaElements = mediaElements.Where(s => s.Channel.ToUpper().Equals(channel.ToUpper()));
+                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
+                    if (!string.IsNullOrWhiteSpace(searchString))
+                    {
+                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
+                                               || s.Topic.Contains(searchString));
+                    }
+                }
+                else if (searchString.StartsWith("#"))
+                {
+                    searchString.Trim();
+                    var index = searchString.IndexOf(" ");
+                    string topic = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
+                    mediaElements = mediaElements.Where(s => s.Topic.ToUpper().Equals(topic.ToUpper()));
+                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
+                    if (!string.IsNullOrWhiteSpace(searchString))
+                    {
+                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString));
+                    }
+                }
+                else if (searchString.StartsWith("movie", true, null))
+                {
+                    searchString.Trim();
+                    var index = searchString.IndexOf(" ");
+                    string topic = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
+                    mediaElements = mediaElements.Where(s => s.MediaType ==MediaType.Movie);
+                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
+                    if (!string.IsNullOrWhiteSpace(searchString))
+                    {
+                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
+                                               || s.Topic.Contains(searchString));
+                    }
+                }
+                else if (searchString.StartsWith("series", true, null))
+                {
+                    searchString.Trim();
+                    var index = searchString.IndexOf(" ");
+                    string topic = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
+                    mediaElements = mediaElements.Where(s => s.MediaType == MediaType.Series);
                     searchString = index == -1 ? "" : searchString.Substring(index).Trim();
                     if (!string.IsNullOrWhiteSpace(searchString))
                     {
@@ -108,12 +143,10 @@ namespace MediaLibrarian.Pages
         public async Task OnPostAsync(string sortOrder,
         string currentFilter, string searchString, int? pageIndex)
         {
-            var pokedex = await PokemonTVDataService.GetAllMedia();
-            var mediathekList = await MediathekViewWebService.GetMediaElements();
+            var mediaElements = _channelClientService.GetLatestMediaElements();
             try
             {
-                _context.AddRangeIfNotExists(pokedex);
-                _context.AddRangeIfNotExists(mediathekList);
+                _context.AddRangeIfNotExists(mediaElements);
             }
             catch (Exception e)
             {

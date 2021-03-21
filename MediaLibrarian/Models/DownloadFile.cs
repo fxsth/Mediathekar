@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xabe.FFmpeg;
+using Xabe.FFmpeg.Exceptions;
 
 namespace MediaLibrarian.Models
 {
@@ -26,14 +27,19 @@ namespace MediaLibrarian.Models
             }
             else
             {
-                string year ="";
-                if(element.Year.HasValue)
+                string year = "";
+                if (element.Year.HasValue)
                 {
                     year = " (" + element.Year + ")";
                 }
-                Filename = element.Title+year;
+                Filename = element.Title + year;
             }
             Filename = string.Join("-", Filename.Split(Path.GetInvalidFileNameChars()));
+            Filename = string.Join("-", Filename.Split(Path.GetInvalidPathChars()));
+            Filename = Filename.Replace(",",""); 
+            Filename = Filename.Replace("!", "");
+            Filename = Filename.Replace(":", "");
+            Filename = Filename.Trim();
             MediaType = element.MediaType;
         }
 
@@ -44,7 +50,7 @@ namespace MediaLibrarian.Models
         public string? Status { get; private set; }
 
         private IMediaInfo MediaInfo;
-        
+
         public void startDownload()
         {
             Task.Run(() => download());
@@ -53,20 +59,10 @@ namespace MediaLibrarian.Models
         {
             try
             {
-                //FFmpeg.SetExecutablesPath("C:\\Program Files\\ffmpeg\\bin");
-                string moviesDir;
-                if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
-                {
-                    moviesDir = Environment.GetEnvironmentVariable("Movies");
-                }
-                else
-                {
-                    var pathWithEnv = @"%USERPROFILE%\Downloads";
-                    moviesDir = Environment.ExpandEnvironmentVariables(pathWithEnv);
-                }
+                string outputPath = GetOutputPath(); 
+                Console.WriteLine("GetMediaInfo called with: " + Url);
                 MediaInfo = await FFmpeg.GetMediaInfo(Url);
-
-                string outputPath = Path.Combine(moviesDir, Filename + ".mp4");
+                Console.WriteLine("Got the MediaInfo - FFmpeg seems to work fine");
                 var videoStream = selectStreamWithHighestBitrate(MediaInfo.VideoStreams).CopyStream();
                 var audioStream = selectStreamWithHighestBitrate(MediaInfo.AudioStreams).CopyStream();
                 IConversion conversion = FFmpeg.Conversions.New();
@@ -82,16 +78,41 @@ namespace MediaLibrarian.Models
             }
             catch (Exception e)
             {
+                Console.WriteLine("Downlod-Exception: "+e.Message);
+                Console.WriteLine(e.InnerException.Message);
                 Status = e.Message;
                 return null;
             }
         }
-
-        private IVideoStream selectStreamWithHighestBitrate(IEnumerable<IVideoStream> streams)
+        private string GetOutputPath()
+        {
+            Console.WriteLine("Starting GetOutputPath()");
+            string baseDir;
+            if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+            {
+                // Docker
+                if (MediaType == MediaType.Movie)
+                    baseDir = Environment.ExpandEnvironmentVariables(@"/movies");
+                else
+                    baseDir = Environment.ExpandEnvironmentVariables(@"/tv");
+            }
+            else
+            {
+                // Windows
+                var pathWithEnv = @"%USERPROFILE%\Downloads";
+                baseDir = Environment.ExpandEnvironmentVariables(pathWithEnv);
+            }
+            if (baseDir.Length == 0 || !Directory.Exists(baseDir))
+                baseDir = Directory.GetCurrentDirectory();
+            Console.WriteLine("BaseDir is: " + baseDir);
+            Console.WriteLine("Filename is: " + Filename);
+            return  Path.Combine(baseDir, Filename + ".mp4");
+        }
+        private static IVideoStream selectStreamWithHighestBitrate(IEnumerable<IVideoStream> streams)
         {
             return streams.ToList().OrderByDescending(stream => stream.Bitrate).First();
         }
-        private IAudioStream selectStreamWithHighestBitrate(IEnumerable<IAudioStream> streams)
+        private static IAudioStream selectStreamWithHighestBitrate(IEnumerable<IAudioStream> streams)
         {
             return streams.ToList().OrderByDescending(stream => stream.Bitrate).First();
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MediaLibrarian.Models;
 
-namespace MediaLibrarian.Channel
+namespace MediaLibrarian.Channels.PokemonTV
 {
     public class Images
     {
@@ -13,8 +13,8 @@ namespace MediaLibrarian.Channel
 
     public class Medium
     {
-        public int count { get; set; }
-        public int rating { get; set; }
+        public uint count { get; set; }
+        public uint rating { get; set; }
         public string episode { get; set; }
         public string description { get; set; }
         public bool is_country_whitelist { get; set; }
@@ -25,7 +25,7 @@ namespace MediaLibrarian.Channel
         public bool is_new { get; set; }
         public List<string> country_codes { get; set; }
         public string offline_url { get; set; }
-        public DateTime last_modified { get; set; }
+        public DateTime? last_modified { get; set; }
         public string stream_url { get; set; }
         public string captions { get; set; }
         public string id { get; set; }
@@ -46,11 +46,11 @@ namespace MediaLibrarian.Channel
         public bool stunt_channel { get; set; }
         public string channel_name { get; set; }
         public List<Medium> media { get; set; }
-        public DateTime channel_creation_date { get; set; }
+        public DateTime? channel_creation_date { get; set; }
         public int watch_now_order { get; set; }
         public string channel_id { get; set; }
         public ChannelImages channel_images { get; set; }
-        public DateTime channel_update_date { get; set; }
+        public DateTime? channel_update_date { get; set; }
         public string media_type { get; set; }
         public string channel_status { get; set; }
     }
@@ -71,14 +71,14 @@ namespace MediaLibrarian.Channel
             return new MediaElement
             {
                 Channel = "PokemonTV",
-                Episode = Int32.TryParse(medium.episode, out var tempValE) ? tempValE : (int?)null,
-                Season = Int32.TryParse(medium.season, out var tempValS) ? tempValS : (int?)null,
+                Episode = UInt32.TryParse(medium.episode, out var tempValE) ? tempValE : (uint?)null,
+                Season = UInt32.TryParse(medium.season, out var tempValS) ? tempValS : (uint?)null,
                 IdInChannel = "PokemonTV" + medium.id,
                 LastModified = medium.last_modified,
                 MediaType = medium.episode.Length == 0 ? MediaType.Movie : MediaType.Series,
                 Title = medium.title,
                 Topic = "Pokemon",
-                Url = medium.stream_url
+                Url = medium.stream_url                
             };
         }
     }

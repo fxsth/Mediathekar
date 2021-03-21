@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 
-namespace QueryData
+namespace MediaLibrarian.Channels.MediathekViewWeb
 {
-///<summary>Data type for serializing into json-content</summary>
-public class Query
+    ///<summary>Data type for serializing into json-content</summary>
+    public class Query
 {
     public Query()
     {

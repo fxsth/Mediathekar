@@ -343,3 +343,4 @@ healthchecksdb
 
 # SQLite
 *.db
+ServusTV/

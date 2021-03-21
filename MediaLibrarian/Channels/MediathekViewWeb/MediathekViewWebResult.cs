@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ResultData
+namespace MediaLibrarian.Channels.MediathekViewWeb
 {
     public class MediaElement
     {
@@ -9,7 +9,7 @@ namespace ResultData
         public string topic { get; set; }
         public string title { get; set; }
         public string description { get; set; }
-        public DateTime timestamp { get; set; }
+        public DateTime? timestamp { get; set; }
         public uint? duration { get; set; }
         public uint? size { get; set; }
         public string url_website { get; set; }
@@ -23,7 +23,7 @@ namespace ResultData
 
     public class QueryInfo
     {
-        public string filmlisteTimestamp { get; set; }
+        public DateTime? filmlisteTimestamp { get; set; }
         public string searchEngineTime { get; set; }
         public int resultCount { get; set; }
         public int totalResults { get; set; }
@@ -35,7 +35,7 @@ namespace ResultData
     }
 
     ///<summary>root class for json response</summary>
-    public class MediathekResult
+    public class MediathekViewWebResult
     {
         public Result result { get; set; }
         public object err { get; set; }
@@ -53,7 +53,7 @@ namespace ResultData
             return err != null;
         }
 
-        public static List<MediaLibrarian.Models.MediaElement> ToMediaElements(MediathekResult mediathekResult)
+        public static List<MediaLibrarian.Models.MediaElement> ToMediaElements(MediathekViewWebResult mediathekResult)
         {
             if(mediathekResult.hasErrors())
             {
@@ -70,10 +70,12 @@ namespace ResultData
                     Title = medium.title,
                     Topic = medium.topic,
                     Url = medium.url_video_hd,
+                    Duration = medium.duration,
+                    Size = medium.size,
                     MediaType = MediaLibrarian.Models.MediaType.Movie   // standard
                 };
-                int? season = null;
-                int? episode = null;
+                uint? season = null;
+                uint? episode = null;
                 
                 if (MediaLibrarian.Models.Utilities.MediaElementUtilities.ContainsSeasonEpisode(medium.title, ref season, ref episode))
                 {
@@ -81,9 +83,9 @@ namespace ResultData
                     element.Episode = episode;
                     element.MediaType = MediaLibrarian.Models.MediaType.Series;
                 }
-                if(medium.duration < 45 * 60)
+                if(medium.duration < 60 * 60)
                 {
-                    // less than 45min -> not a movie
+                    // less than 60min -> not a movie
                     element.MediaType = MediaLibrarian.Models.MediaType.Series;
                 }
                 mediaElements.Add(element);

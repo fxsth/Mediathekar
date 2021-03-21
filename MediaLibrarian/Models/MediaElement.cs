@@ -14,13 +14,15 @@ namespace MediaLibrarian.Models
         public string Topic { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }
-        public int? Year { get; set; }
-        public DateTime LastModified { get; set; }
+        public uint? Year { get; set; }
+        public uint? Duration { get; set; }
+        public uint? Size { get; set; }
+        public DateTime? LastModified { get; set; }
         public DateTime? OnlineFrom { get; set; }
         public DateTime? OnlineUntil { get; set; }
         public MediaType MediaType { get; set; }
-        public int? Season { get; set; }
-        public int? Episode { get; set; }
+        public uint? Season { get; set; }
+        public uint? Episode { get; set; }
 
         public bool Equals(MediaElement x, MediaElement y)
         {

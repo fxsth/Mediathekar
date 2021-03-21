@@ -3,26 +3,15 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using QueryData;
-using ResultData;
 
-namespace MediaLibrarian.Services
+namespace MediaLibrarian.Channels.MediathekViewWeb
 {
 
-    public class MediathekViewWebService
+    public class MediathekViewWebClient : IChannelClient
     {
-        public MediathekViewWebService(IWebHostEnvironment webHostEnvironment)
-        {
-            WebHostEnvironment = webHostEnvironment;
-            _query = new Query();
-        }
-
-        public IWebHostEnvironment WebHostEnvironment { get; }
-        private MediathekViewWebService() => _query = new Query();
-        private async Task<MediathekResult> sendQuery()
+        public MediathekViewWebClient() => _query = new Query();
+        private async Task<MediathekViewWebResult> sendQuery()
         {
             try
             {
@@ -30,25 +19,24 @@ namespace MediaLibrarian.Services
             }
             catch (Exception e)
             {
-                return new MediathekResult { err = e.Message };
+                return new MediathekViewWebResult { err = e.Message };
             }
         }
 
-        public async Task<List<MediaLibrarian.Models.MediaElement>> GetMediaElements()
+        public async Task<List<Models.MediaElement>> GetLatestMediaElements()
         {
-            _query.size = 10000;
+            _query.size = 1000;
             _query.sortBy = "timestamp";
             _query.sortOrder = "desc";
+            _query.future = false;
             var result = await sendQuery();
-            return MediathekResult.ToMediaElements(result);
+            return MediathekViewWebResult.ToMediaElements(result);
         }
 
         private Query _query;
         private static readonly HttpClient client = new HttpClient();
 
-
-
-        private static async Task<MediathekResult> ProcessQuery(Query query)
+        private static async Task<MediathekViewWebResult> ProcessQuery(Query query)
         {
             JsonSerializerOptions querySerializerOptions = new JsonSerializerOptions { IgnoreNullValues = true };
             var text = JsonSerializer.Serialize(query, querySerializerOptions);
@@ -58,12 +46,12 @@ namespace MediaLibrarian.Services
             {
                 var stream = await streamTask.Content.ReadAsStreamAsync();
                 JsonSerializerOptions resultSerializerOptions = new JsonSerializerOptions();
-                resultSerializerOptions.Converters.Add(new Models.Utilities.DateTimeConverter());
+                resultSerializerOptions.Converters.Add(new Models.Utilities.NullableDateTimeConverter());
                 resultSerializerOptions.Converters.Add(new Models.Utilities.NullableUInt32Converter());
-                MediathekResult res = null;
+                MediathekViewWebResult res = null;
                 try
                 {
-                    res = await JsonSerializer.DeserializeAsync<MediathekResult>(stream, resultSerializerOptions);
+                    res = await JsonSerializer.DeserializeAsync<MediathekViewWebResult>(stream, resultSerializerOptions);
                 }
                 catch (Exception e)
                 {
@@ -71,7 +59,7 @@ namespace MediaLibrarian.Services
                 }
                 return res;
             }
-            return new MediathekResult { err = streamTask.ReasonPhrase };
+            return new MediathekViewWebResult { err = streamTask.ReasonPhrase };
         }
     }
 }

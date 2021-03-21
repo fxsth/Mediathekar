@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  medialibrarian:
+    image: ${DOCKER_REGISTRY-}medialibrarian
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Production
+    - ASPNETCORE_URLS=http://*:5000
+    ports:
+    - "5000:80"
+    - "5001:443"
+    build:
+      context: .
+      dockerfile: MediaLibrarian/Dockerfile
+    volumes:
+    - /c/test:/tv
+    - /c/test:/movies

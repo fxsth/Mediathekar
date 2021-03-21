@@ -1,25 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MediaLibrarian.Models;
-using Microsoft.AspNetCore.Hosting;
-using MediaLibrarian.Channel;
 
-namespace MediaLibrarian.Services
+namespace MediaLibrarian.Channels.PokemonTV
 {
-    public class PokemonTVDataService
+    public class PokemonTVClient : IChannelClient
     {
-        public PokemonTVDataService(IWebHostEnvironment webHostEnvironment)
-        {
-            WebHostEnvironment = webHostEnvironment;
-        }
-
-        public IWebHostEnvironment WebHostEnvironment { get; }
-        public async Task<List<MediaLibrarian.Models.MediaElement>> GetAllMedia()
+        public async Task<List<MediaLibrarian.Models.MediaElement>> GetLatestMediaElements()
         {
             var PokemonResultData = await RetrieveAvailableData();
             return PokemonTVResultConverter.ToMediaElements(PokemonResultData);
@@ -33,7 +22,7 @@ namespace MediaLibrarian.Services
                 {
                     var stream = await streamTask.Content.ReadAsStreamAsync();
                     JsonSerializerOptions resultSerializerOptions = new JsonSerializerOptions();
-                    resultSerializerOptions.Converters.Add(new Models.Utilities.DateTimeConverter());
+                    resultSerializerOptions.Converters.Add(new Models.Utilities.NullableDateTimeConverter());
                     return await JsonSerializer.DeserializeAsync<IEnumerable<PokemonTVResult>>(stream, resultSerializerOptions);
                 }
                 return null;

@@ -22,10 +22,8 @@ namespace MediaLibrarian
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddTransient<PokemonTVDataService>();
-            services.AddTransient<MediathekViewWebService>();
             services.AddSingleton<DownloadService>();
-
+            services.AddTransient<ChannelClientService>();
             services.AddDbContext<MediaElementContext>(options =>
                     options.UseSqlite("Filename=MediaDatabase.db"));
         }
