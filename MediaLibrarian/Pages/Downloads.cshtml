@@ -28,12 +28,10 @@
         @foreach (var download in Model.Downloads)
         {
             <div class="card">
-                @*<div class="card-img" style="background-image: url('@season.channel_images.dashboard_image_1125_1500');">
-                    </div>*@
                 <div class="card-body">
                     <h5 class="card-title">@download.Filename</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@download.MediaType</h6>
                     <p class="card-text">
-                        @download.MediaType <br />
                         @{
                             var status = download.Status != null ? download.Status : "Progress: " + download.Progress + " %";
                         }
@@ -46,12 +44,12 @@
 }
 else
 {
-    <h4>Currently no active downloads!</h4>
+    <h6>Currently no active downloads!</h6>
 }
 <hr>
 @if (Model.Completed != null)
 {
-    foreach (var complete in Model.Completed)
+    foreach (var complete in Model.Completed.Reverse())
     {
         string status;
         string alert;
@@ -66,8 +64,7 @@ else
             alert = "alert-warning";
         }
         <div class="alert @alert" role="alert">
-            <h4 class="alert-heading">@complete.Filename</h4>
-            <p>Media type: @complete.MediaType</p>
+            <p class="alert-heading">@complete.Filename</p>
             <hr>
             <p class="mb-0">@status</p>
         </div>

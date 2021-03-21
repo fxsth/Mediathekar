@@ -28,10 +28,6 @@ namespace MediaLibrarian.Pages
             _downloadService = downloadService;
         }
 
-        //public void OnGet()
-        //{
-        //    Downloads = _downloadService.Downloads;
-        //}
         public async Task<IActionResult> OnGetAsync(string season, string episode, string title, string url)
         {
             if (url != null && url.Length != 0)

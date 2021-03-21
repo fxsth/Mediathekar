@@ -9,7 +9,6 @@ namespace MediaLibrarian.Services
 {
     public class ChannelClientService
     {
-
         public List<MediaElement> GetLatestMediaElements()
         {
             List<MediaElement> channelClientResults = new List<MediaElement>();
