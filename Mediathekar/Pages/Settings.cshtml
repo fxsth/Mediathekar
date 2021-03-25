@@ -1,0 +1,17 @@
+﻿@page
+@model Mediathekar.Pages.SettingsModel
+@{
+}
+<form method="post">
+    <div class="form-group">
+        <label>Directory for Movies</label>
+        <input asp-for="settings.MoviesDir" type="url" />
+    </div>
+    <div class="form-group">
+        <label>Directory for Series</label>
+        <input asp-for="settings.SeriesDir" type="text" />
+    </div>
+    <div class="form-group">
+        <input type="submit" />
+    </div>
+</form>
