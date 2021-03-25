@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  medialibrarian:
-    image: ${DOCKER_REGISTRY-}Mediathekar
+  mediathekar:
+    image: ${DOCKER_REGISTRY-}mediathekar
     environment:
     - ASPNETCORE_ENVIRONMENT=Production
     - ASPNETCORE_URLS=http://*:5000
