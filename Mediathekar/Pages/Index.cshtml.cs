@@ -41,9 +41,19 @@ namespace Mediathekar.Pages
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
             SeasonSort = sortOrder == "Season" ? "season_desc" : "Season";
 
-            if (searchString != null)
+            if (!String.IsNullOrEmpty(searchString))
             {
                 pageIndex = 1;
+                var searchElements = _channelClientService.SearchForMediaElements(searchString);
+                try
+                {
+                    _context.AddRangeIfNotExists(searchElements);
+                }
+                catch (Exception e)
+                {
+                    Debug.Print(e.Message);
+                }
+                _context.SaveChanges();
             }
             else
             {

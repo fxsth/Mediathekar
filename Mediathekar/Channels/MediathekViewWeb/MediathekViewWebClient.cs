@@ -8,20 +8,11 @@ using System.Threading.Tasks;
 namespace Mediathekar.Channels.MediathekViewWeb
 {
 
-    public class MediathekViewWebClient : IChannelClient
+    public class MediathekViewWebClient : IChannelClient, IQueryableChannelClient
     {
+        private Query _query;
+        private static readonly HttpClient client = new HttpClient();
         public MediathekViewWebClient() => _query = new Query();
-        private async Task<MediathekViewWebResult> sendQuery()
-        {
-            try
-            {
-                return await ProcessQuery(_query);
-            }
-            catch (Exception e)
-            {
-                return new MediathekViewWebResult { err = e.Message };
-            }
-        }
 
         public async Task<List<Models.MediaElement>> GetLatestMediaElements()
         {
@@ -33,8 +24,14 @@ namespace Mediathekar.Channels.MediathekViewWeb
             return MediathekViewWebResult.ToMediaElements(result);
         }
 
-        private Query _query;
-        private static readonly HttpClient client = new HttpClient();
+        public async Task<List<Models.MediaElement>> SearchForMediaElements(string searchterm)
+        {
+            _query.size = 100;
+            _query.future = false;
+            _query.addFieldAndQuery("title", "topic", searchterm);
+            var result = await sendQuery();
+            return MediathekViewWebResult.ToMediaElements(result);
+        }
 
         private static async Task<MediathekViewWebResult> ProcessQuery(Query query)
         {
@@ -60,6 +57,17 @@ namespace Mediathekar.Channels.MediathekViewWeb
                 return res;
             }
             return new MediathekViewWebResult { err = streamTask.ReasonPhrase };
+        }
+        private async Task<MediathekViewWebResult> sendQuery()
+        {
+            try
+            {
+                return await ProcessQuery(_query);
+            }
+            catch (Exception e)
+            {
+                return new MediathekViewWebResult { err = e.Message };
+            }
         }
     }
 }

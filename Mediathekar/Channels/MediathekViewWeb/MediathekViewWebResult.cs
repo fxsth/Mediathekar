@@ -62,6 +62,17 @@ namespace Mediathekar.Channels.MediathekViewWeb
             List<Mediathekar.Models.MediaElement> mediaElements = new List<Mediathekar.Models.MediaElement>();
             foreach (var medium in mediathekResult.result.results)
             {
+                string url = medium.url_video_hd;
+                if (String.IsNullOrEmpty(url))
+                {
+                    url = medium.url_video;
+                    if (String.IsNullOrEmpty(url))
+                    {
+                        url = medium.url_video_low;
+                        if (String.IsNullOrEmpty(url))
+                            continue;
+                    }
+                }
                 var element = new Mediathekar.Models.MediaElement
                 {
                     Channel = medium.channel,
@@ -69,7 +80,7 @@ namespace Mediathekar.Channels.MediathekViewWeb
                     LastModified = medium.timestamp,
                     Title = medium.title,
                     Topic = medium.topic,
-                    Url = medium.url_video_hd,
+                    Url = url,
                     Duration = medium.duration,
                     Size = medium.size,
                     MediaType = Mediathekar.Models.MediaType.Movie   // standard
