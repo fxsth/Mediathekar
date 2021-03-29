@@ -64,65 +64,8 @@ namespace Mediathekar.Pages
 
             IQueryable<MediaElement> mediaElements = from s in _context.MediaElements
                                                      select s;
-            if (!String.IsNullOrWhiteSpace(searchString))
-            {
-                if (searchString.StartsWith("!"))
-                {
-                    searchString.Trim();
-                    var index = searchString.IndexOf(" ");
-                    string channel = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
-                    mediaElements = mediaElements.Where(s => s.Channel.ToUpper().Equals(channel.ToUpper()));
-                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
-                    if (!string.IsNullOrWhiteSpace(searchString))
-                    {
-                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
-                                               || s.Topic.Contains(searchString));
-                    }
-                }
-                else if (searchString.StartsWith("#"))
-                {
-                    searchString.Trim();
-                    var index = searchString.IndexOf(" ");
-                    string topic = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
-                    mediaElements = mediaElements.Where(s => s.Topic.ToUpper().Equals(topic.ToUpper()));
-                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
-                    if (!string.IsNullOrWhiteSpace(searchString))
-                    {
-                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString));
-                    }
-                }
-                else if (searchString.StartsWith("movie", true, null))
-                {
-                    searchString.Trim();
-                    var index = searchString.IndexOf(" ");
-                    string topic = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
-                    mediaElements = mediaElements.Where(s => s.MediaType ==MediaType.Movie);
-                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
-                    if (!string.IsNullOrWhiteSpace(searchString))
-                    {
-                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
-                                               || s.Topic.Contains(searchString));
-                    }
-                }
-                else if (searchString.StartsWith("series", true, null))
-                {
-                    searchString.Trim();
-                    var index = searchString.IndexOf(" ");
-                    string topic = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
-                    mediaElements = mediaElements.Where(s => s.MediaType == MediaType.Series);
-                    searchString = index == -1 ? "" : searchString.Substring(index).Trim();
-                    if (!string.IsNullOrWhiteSpace(searchString))
-                    {
-                        mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
-                                               || s.Topic.Contains(searchString));
-                    }
-                }
-                else
-                {
-                    mediaElements = mediaElements.Where(s => s.Title.Contains(searchString)
-                                           || s.Topic.Contains(searchString) || s.Channel.Contains(searchString));
-                }
-            }
+            // Filter Keywords/chars and searchterm
+            mediaElements = DataUtilities.FilterSearch(mediaElements, searchString);
             switch (sortOrder)
             {
                 case "Title":
