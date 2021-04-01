@@ -14,22 +14,17 @@ namespace Mediathekar.Data
         {
             if (!String.IsNullOrWhiteSpace(searchString))
             {
+                searchString.Trim();
                 // Select Channel with !
                 if (searchString.StartsWith("!"))
                 {
-                    searchString.Trim();
                     var index = searchString.IndexOf(" ");
                     string channel = index == -1 ? searchString.Substring(1) : searchString.Substring(1, index - 1);
                     mediaElements = mediaElements.Where(s => s.Channel.ToUpper().Equals(channel.ToUpper()));
                     searchString = index == -1 ? "" : searchString.Substring(index).Trim();
-                    if (!string.IsNullOrWhiteSpace(searchString))
-                    {
-                        mediaElements = mediaElements.Where(s => EF.Functions.Like(s.Title, searchString)
-                                               || EF.Functions.Like(s.Title, searchString));
-                    }
                 }
                 // Select Topic with #
-                else if (searchString.StartsWith("#"))
+                if (searchString.StartsWith("#"))
                 {
                     searchString.Trim();
                     var index = searchString.IndexOf(" ");
@@ -38,11 +33,12 @@ namespace Mediathekar.Data
                     searchString = index == -1 ? "" : searchString.Substring(index).Trim();
                     if (!string.IsNullOrWhiteSpace(searchString))
                     {
-                        mediaElements = mediaElements.Where(s => EF.Functions.Like(s.Topic, searchString));
+                        mediaElements = mediaElements.Where(s => EF.Functions.Like(s.Topic, "%"+searchString+"%"));
                     }
                 }
+                searchString = "%" + searchString.Replace(' ', '%') + "%";
                 // Select Mediatype with movie/Movie
-                else if (searchString.StartsWith("movie", true, null))
+                if (searchString.StartsWith("movie", true, null))
                 {
                     searchString.Trim();
                     var index = searchString.IndexOf(" ");
@@ -72,8 +68,7 @@ namespace Mediathekar.Data
                 else
                 {
                     mediaElements = mediaElements.Where(s => EF.Functions.Like(s.Title, searchString)
-                                           || EF.Functions.Like(s.Topic, searchString)
-                                           || EF.Functions.Like(s.Channel, searchString));
+                                           || EF.Functions.Like(s.Topic, searchString));
                 }
             }
             return mediaElements;
